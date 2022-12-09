@@ -1,5 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
-using ChatRoomWeb.Models;
+﻿using ChatRoomWeb.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ChatRoomWeb.Data
 {
@@ -9,6 +9,6 @@ namespace ChatRoomWeb.Data
         {
         }
 
-        public DbSet<ChatModel> Chats { get; set; }
+        public virtual DbSet<UserSignUp> Users { get; set; }
     }
 }

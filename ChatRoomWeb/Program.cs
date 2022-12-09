@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using ChatRoomWeb.Services;
+using ChatRoomWeb.Repositories;
 using ChatRoomWeb.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +12,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
     builder.Configuration.GetConnectionString("DefaultConnection")
     ));
 
+builder.Services.AddSingleton<IUserManagementService, UserManagementService>();
+builder.Services.AddSingleton<IUserManagementRepository, UserManagementRepository>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -20,6 +25,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+app.UseDefaultFiles();
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
