@@ -25,7 +25,7 @@ namespace ChatRoomWeb.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("ChatRoomWeb.Models.UserSignUp", b =>
+            modelBuilder.Entity("ChatRoomWeb.Models.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()

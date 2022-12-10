@@ -34,9 +34,9 @@ namespace ChatRoomWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> SignUpPost(SignUpViewModel viewModel)
+        public async Task<IActionResult> SignUpPostAsync(SignUpViewModel viewModel)
         {
-            await _userManagementService.SignUp(viewModel.Username, viewModel.Email, viewModel.Password, viewModel.ConfirmPassword, _db);
+            await _userManagementService.SignUpAsync(viewModel.Username, viewModel.Email, viewModel.Password, viewModel.ConfirmPassword);
             await Task.CompletedTask;
             return RedirectToAction("ConfirmationReminder");
         }

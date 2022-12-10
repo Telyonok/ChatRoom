@@ -14,6 +14,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 builder.Services.AddSingleton<IUserManagementService, UserManagementService>();
 builder.Services.AddSingleton<IUserManagementRepository, UserManagementRepository>();
+builder.Services.AddSingleton<IAuthenticationService, AuthenticationService>();
 
 var app = builder.Build();
 

@@ -1,9 +1,11 @@
 ﻿using ChatRoomWeb.Data;
+using ChatRoomWeb.Models;
 
 namespace ChatRoomWeb.Repositories
 {
     public interface IUserManagementRepository
     {
-        Task SignUp(string username, string email, string passwordHash, ApplicationDbContext _db);
+        Task SignUpAsync(string username, string email, string passwordHash);
+        Task<User> GetUserByEmailAsync(string email);
     }
 }

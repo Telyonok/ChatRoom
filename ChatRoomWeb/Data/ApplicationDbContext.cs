@@ -9,6 +9,6 @@ namespace ChatRoomWeb.Data
         {
         }
 
-        public virtual DbSet<UserSignUp> Users { get; set; }
+        public virtual DbSet<User> Users { get; set; }
     }
 }

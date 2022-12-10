@@ -4,9 +4,9 @@ using System.Diagnostics.CodeAnalysis;
 
 namespace ChatRoomWeb.Models
 {
-    public class UserSignUp
+    public class User
     {
-        public UserSignUp(string username, string email, string passwordHash)
+        public User(string username, string email, string passwordHash)
         {
             Username = username;
             Email = email;
