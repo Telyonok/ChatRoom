@@ -1,10 +1,9 @@
 ﻿using ChatRoomWeb.Data;
+using ChatRoomWeb.Helpers;
 using ChatRoomWeb.Models;
 using ChatRoomWeb.Repositories;
-using Microsoft.AspNetCore.Identity;
-using NuGet.ProjectModel;
 using System.Security.Authentication;
-using System.Web.Helpers;
+
 
 namespace ChatRoomWeb.Services
 {
@@ -25,7 +24,7 @@ namespace ChatRoomWeb.Services
                 throw new AuthenticationException();
             }
 
-            var isValid = Crypto.VerifyHashedPassword(user.PasswordHash, login.Password);
+            var isValid = Helpers.Crypto.VerifyHashedPassword(user.PasswordHash, login.Password);
             if (!isValid)
             {
                 throw new AuthenticationException();

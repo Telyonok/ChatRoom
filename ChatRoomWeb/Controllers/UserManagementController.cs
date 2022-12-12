@@ -1,20 +1,24 @@
 ﻿using ChatRoomWeb.Data;
+using ChatRoomWeb.Models;
 using ChatRoomWeb.Services;
 using ChatRoomWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging.Abstractions;
+using Flurl;
+using System.Net.Http.Json;
+using NuGet.Protocol;
 
 namespace ChatRoomWeb.Controllers
 {
     public class UserManagementController : Controller
     {
         private readonly IUserManagementService _userManagementService;
-        public readonly ApplicationDbContext _db;
+        private readonly IAuthenticationService _authenticationService;
 
-        public UserManagementController(IUserManagementService userManagementService, ApplicationDbContext db)
+        public UserManagementController(IUserManagementService userManagementService, IAuthenticationService authenticationService)
         {
             _userManagementService = userManagementService;
-            _db = db;
+            _authenticationService = authenticationService;
         }
 
         public IActionResult Index()
@@ -39,6 +43,21 @@ namespace ChatRoomWeb.Controllers
             await _userManagementService.SignUpAsync(viewModel.Username, viewModel.Email, viewModel.Password, viewModel.ConfirmPassword);
             await Task.CompletedTask;
             return RedirectToAction("ConfirmationReminder");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel)
+        {
+            var tokenRequest = new TokenRequest() { Email = loginViewModel.Email, Password = loginViewModel.Password };
+            var tokenResponse = await _authenticationService.RequestTokenAsync(tokenRequest);
+            Response.Cookies.Append("X-Access-Token", tokenResponse.Token, 
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict
+                });
+
+            return RedirectToAction("GetProtectedPing", "Ping");
         }
     }
 }

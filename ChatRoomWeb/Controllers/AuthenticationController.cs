@@ -1,5 +1,7 @@
 ﻿using ChatRoomWeb.Models;
 using ChatRoomWeb.Services;
+using ChatRoomWeb.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ChatRoomWeb.Controllers
@@ -15,8 +17,10 @@ namespace ChatRoomWeb.Controllers
 
         [HttpPost]
         [Route("/api/token")]
-        public async Task<IActionResult> RequestToken(TokenRequest tokenRequest)
+        [AllowAnonymous]
+        public async Task<IActionResult> RequestToken(LoginViewModel loginViewModel)
         {
+            var tokenRequest = new TokenRequest() { Email = loginViewModel.Email, Password = loginViewModel.Password };
             var token = await _authenticationService.RequestTokenAsync(tokenRequest);
             return Ok(token);
         }
