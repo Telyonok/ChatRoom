@@ -1,5 +1,4 @@
-﻿using ChatRoomWeb.Data;
-using ChatRoomWeb.Models;
+﻿using ChatRoomWeb.Models;
 
 namespace ChatRoomWeb.Services
 {
@@ -7,6 +6,5 @@ namespace ChatRoomWeb.Services
     {
         Task SignUpAsync(string username, string email,
             string password, string confirmPassword);
-        Task<User> LoginAsync(TokenRequest tokenRequest);
     }
 }

@@ -1,5 +1,4 @@
-﻿using ChatRoomWeb.Data;
-using ChatRoomWeb.Models;
+﻿using ChatRoomWeb.Models;
 using ChatRoomWeb.Services;
 using ChatRoomWeb.ViewModels;
 using Microsoft.AspNetCore.Mvc;
@@ -7,18 +6,18 @@ using Microsoft.Extensions.Logging.Abstractions;
 using Flurl;
 using System.Net.Http.Json;
 using NuGet.Protocol;
+using Flurl.Http;
+using System.Net.Http.Headers;
 
 namespace ChatRoomWeb.Controllers
 {
     public class UserManagementController : Controller
     {
         private readonly IUserManagementService _userManagementService;
-        private readonly IAuthenticationService _authenticationService;
 
-        public UserManagementController(IUserManagementService userManagementService, IAuthenticationService authenticationService)
+        public UserManagementController(IUserManagementService userManagementService)
         {
             _userManagementService = userManagementService;
-            _authenticationService = authenticationService;
         }
 
         public IActionResult Index()
@@ -48,8 +47,13 @@ namespace ChatRoomWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel)
         {
-            var tokenRequest = new TokenRequest() { Email = loginViewModel.Email, Password = loginViewModel.Password };
-            var tokenResponse = await _authenticationService.RequestTokenAsync(tokenRequest);
+            var httpString = await "https://localhost:7158"
+                .AppendPathSegment("/api/token")
+                .PostJsonAsync(loginViewModel)
+                .ReceiveString();
+            var token = httpString[10..^2];
+            TokenResponse tokenResponse = new TokenResponse() { Token = token };
+            // запрос в authController  = await _authenticationService.RequestTokenAsync(tokenRequest);
             Response.Cookies.Append("X-Access-Token", tokenResponse.Token, 
                 new CookieOptions
                 {
@@ -57,7 +61,7 @@ namespace ChatRoomWeb.Controllers
                     SameSite = SameSiteMode.Strict
                 });
 
-            return RedirectToAction("GetProtectedPing", "Ping");
+            return RedirectToAction("ConfirmationReminder");
         }
     }
 }
