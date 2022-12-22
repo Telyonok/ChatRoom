@@ -47,14 +47,9 @@ namespace ChatRoomWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel)
         {
-            var httpString = await "https://localhost:7158"
-                .AppendPathSegment("/api/token")
-                .PostJsonAsync(loginViewModel)
-                .ReceiveString();
-            var token = httpString[10..^2];
-            TokenResponse tokenResponse = new TokenResponse() { Token = token };
-            // запрос в authController  = await _authenticationService.RequestTokenAsync(tokenRequest);
-            Response.Cookies.Append("X-Access-Token", tokenResponse.Token, 
+            var tokenResponse = await _userManagementService.LoginPostAsync(loginViewModel);
+
+            Response.Cookies.Append("X-Access-Token", tokenResponse.Token,
                 new CookieOptions
                 {
                     HttpOnly = true,
@@ -62,6 +57,17 @@ namespace ChatRoomWeb.Controllers
                 });
 
             return RedirectToAction("ConfirmationReminder");
+        }
+
+        [Route("VerifyEmail/{verificationData}")]
+        public async Task<IActionResult> VerifyEmail(string verificationData)
+        {
+            var verified = await _userManagementService.VerifyEmail(verificationData);
+            if (verified)
+            {
+                return View("EmailVerified");
+            }
+            return View("VerifyFailed");
         }
     }
 }
