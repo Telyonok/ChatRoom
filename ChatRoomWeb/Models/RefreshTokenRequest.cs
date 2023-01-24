@@ -1,8 +1,7 @@
 ﻿namespace ChatRoomWeb.Models
 {
-    public class TokenResponse
+    public class RefreshTokenRequest
     {
-        public string Token { get; set; }
         public string RefreshToken { get; set; }
     }
 }

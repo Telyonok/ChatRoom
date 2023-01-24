@@ -18,7 +18,9 @@
                                     <div class="form-outline">
                                         @Html.TextBoxFor(m => m.Email, new { @class="form-control form-control-lg", type="email", required = "required"})
                                         <label class="form-label">Email</label>
+
                                     </div>
+                                        @Html.ValidationMessageFor(x=>x.Email, "", new{@class = "error"})
 
                                 </div>
 
@@ -30,7 +32,9 @@
                                     <div class="form-outline">
                                         @Html.TextBoxFor(m => m.Password, new { @class="form-control form-control-lg", type="password", required = "required"})
                                         <label class="form-label">Password</label>
+
                                     </div>
+                                        @Html.ValidationMessageFor(x=>x.Password, "", new{@class = "error"})
 
                                 </div>
 

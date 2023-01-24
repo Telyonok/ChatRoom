@@ -8,6 +8,9 @@ namespace ChatRoomWeb.Repositories
     {
         Task<int> GetUserIdByVerification(string verificationData);
         Task SignUpAsync(string username, string email, string passwordHash);
-        public Task<string> LoginPostAsync(LoginViewModel loginViewModel);
+        Task<TokenResponse> LoginPostAsync(LoginViewModel loginViewModel);
+        Task<bool> IsUniqueUsernameAsync(string userName);
+        Task<bool> IsUniqueEmailAsync(string email);
+        Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest refreshTokenRequest);
     }
 }

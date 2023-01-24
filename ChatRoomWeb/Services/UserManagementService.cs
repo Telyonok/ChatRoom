@@ -19,12 +19,24 @@ namespace ChatRoomWeb.Services
             _userManagementRepository = userManagementRepository;
         }
 
+        public async Task<bool> IsUniqueEmailAsync(string email)
+        {
+            return await _userManagementRepository.IsUniqueEmailAsync(email);
+        }
+
+        public async Task<bool> IsUniqueUsernameAsync(string username)
+        {
+            return await _userManagementRepository.IsUniqueUsernameAsync(username);
+        }
+
         public async Task<TokenResponse> LoginPostAsync(LoginViewModel loginViewModel)
         {
-            var httpString = await _userManagementRepository.LoginPostAsync(loginViewModel);
-            var token = httpString[10..^2];
-            TokenResponse tokenResponse = new TokenResponse() { Token = token };
-            return tokenResponse;
+            return await _userManagementRepository.LoginPostAsync(loginViewModel);
+        }
+
+        public async Task<TokenResponse> RefreshTokenAsync(string refreshToken)
+        {
+            return await _userManagementRepository.RefreshTokenAsync(new RefreshTokenRequest { RefreshToken = refreshToken});
         }
 
         public async Task SignUpAsync(string username, string email, string password, string confirmPassword)

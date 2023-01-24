@@ -9,6 +9,9 @@ namespace ChatRoomWeb.Services
         Task SignUpAsync(string username, string email,
             string password, string confirmPassword);
         Task<bool> VerifyEmail(string verificationData);
-        public Task<TokenResponse> LoginPostAsync(LoginViewModel loginViewModel);
+        Task<TokenResponse> LoginPostAsync(LoginViewModel loginViewModel);
+        Task<bool> IsUniqueUsernameAsync(string userName);
+        Task<bool> IsUniqueEmailAsync(string email);
+        Task<TokenResponse> RefreshTokenAsync(string refreshToken);
     }
 }

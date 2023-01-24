@@ -2,20 +2,24 @@
 using ChatRoomWeb.ViewModels;
 using Flurl;
 using Flurl.Http;
+using Flurl.Http.Configuration;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
 namespace ChatRoomWeb.Repositories
 {
-    public class UserManagementRepository : IUserManagementRepository
+    public class UserManagementRepository : RepositoryBase, IUserManagementRepository
     {
+        public UserManagementRepository(IFlurlClientFactory flurlClientFactory, IHttpContextAccessor httpContextAccessor):base(flurlClientFactory, httpContextAccessor)
+        {
+        }
+
         public async Task<int> GetUserIdByVerification(string verificationData)
         {
-            var verifyEmailResponse = await "https://localhost:7158"
-                .AppendPathSegment($"/api/VerifyEmail/{verificationData}")
-                .AllowHttpStatus(HttpStatusCode.OK, HttpStatusCode.NotFound)
-                .GetJsonAsync<VerifyEmailResponse>();
+            var verifyEmailResponse = await _flurlClient
+                                    .Request($"/api/VerifyEmail/{verificationData}") 
+                                    .GetJsonAsync<VerifyEmailResponse>();
             if (verifyEmailResponse == null)
             {
                 return -1;
@@ -24,21 +28,43 @@ namespace ChatRoomWeb.Repositories
             return verifyEmailResponse.UserId;
         }
 
-        public async Task<string> LoginPostAsync(LoginViewModel loginViewModel)
+        public async Task<bool> IsUniqueEmailAsync(string email)
         {
-            return "https://localhost:7158"
-                .AppendPathSegment("/api/token")
+            return await _flurlClient
+                .Request($"/api/IsUniqueEmail/{email}")
+                .GetJsonAsync<bool>();
+        }
+
+        public async Task<bool> IsUniqueUsernameAsync(string username)
+        {
+            return await _flurlClient
+                .Request($"/api/IsUniqueUsername/{username}")
+                .GetJsonAsync<bool>();
+        }
+
+        public async Task<TokenResponse> LoginPostAsync(LoginViewModel loginViewModel)
+        {
+            return await _flurlClient
+                .Request("/api/token")
                 .PostJsonAsync(loginViewModel)
-                .ReceiveString().Result;
+                .ReceiveJson<TokenResponse>();
         }
 
         public async Task SignUpAsync(string username, string email, string passwordHash)
         {
             var userSignUp = new User(username, email, passwordHash);
 
-            await "https://localhost:7158"
-                .AppendPathSegment("/api/signup")
+            await _flurlClient
+                .Request("/api/signup")
                 .PostJsonAsync(userSignUp);
+        }
+
+        public async Task<TokenResponse> RefreshTokenAsync(RefreshTokenRequest refreshTokenRequest)
+        {
+            return await _flurlClient
+                .Request("/api/refreshToken")
+                .PostJsonAsync(refreshTokenRequest)
+                .ReceiveJson<TokenResponse>();
         }
     }
 }

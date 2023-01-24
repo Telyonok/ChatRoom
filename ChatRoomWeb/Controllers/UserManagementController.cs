@@ -8,6 +8,8 @@ using System.Net.Http.Json;
 using NuGet.Protocol;
 using Flurl.Http;
 using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Authentication;
 
 namespace ChatRoomWeb.Controllers
 {
@@ -37,8 +39,32 @@ namespace ChatRoomWeb.Controllers
         }
 
         [HttpPost]
+        [AllowAnonymous]
+        public async Task<JsonResult> IsUniqueUsernameAsync(string username)
+        {
+            var isUnique = await _userManagementService.IsUniqueUsernameAsync(username);
+            return Json(isUnique);
+        }
+
+        [HttpPost]
+        [AllowAnonymous]
+        public async Task<JsonResult> IsUniqueEmailAsync(string email)
+        {
+            var isUnique = await _userManagementService.IsUniqueEmailAsync(email);
+            return Json(isUnique);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> SignUpPostAsync(SignUpViewModel viewModel)
         {
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Select(x => x.Value.Errors)
+                           .Where(y => y.Count > 0)
+                           .ToList();
+                return View("SignUp", viewModel);
+            }
+            
             await _userManagementService.SignUpAsync(viewModel.Username, viewModel.Email, viewModel.Password, viewModel.ConfirmPassword);
             await Task.CompletedTask;
             return RedirectToAction("ConfirmationReminder");
@@ -47,9 +73,30 @@ namespace ChatRoomWeb.Controllers
         [HttpPost]
         public async Task<IActionResult> LoginPostAsync(LoginViewModel loginViewModel)
         {
-            var tokenResponse = await _userManagementService.LoginPostAsync(loginViewModel);
+            if (!ModelState.IsValid)
+            {
+                var errors = ModelState.Select(x => x.Value.Errors)
+                           .Where(y => y.Count > 0)
+                           .ToList();
+                return View("Index", loginViewModel);
+            }
+            TokenResponse? tokenResponse;
+            try
+            {
+                tokenResponse = await _userManagementService.LoginPostAsync(loginViewModel);
+            }
+            catch
+            {
+                return View("Index", loginViewModel);
+            }
 
             Response.Cookies.Append("X-Access-Token", tokenResponse.Token,
+                new CookieOptions
+                {
+                    HttpOnly = true,
+                    SameSite = SameSiteMode.Strict
+                });
+            Response.Cookies.Append("X-Refresh-Token", tokenResponse.RefreshToken,
                 new CookieOptions
                 {
                     HttpOnly = true,
